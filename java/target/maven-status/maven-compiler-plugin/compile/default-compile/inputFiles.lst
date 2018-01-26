@@ -1,0 +1,13 @@
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/WordCount.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/options/TaxiOptions.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/WindowedWordCount.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/common/ExampleUtils.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/common/WriteOneFilePerWindow.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/common/ExampleBigQueryTableOptions.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/common/ExampleOptions.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/MinimalWordCount.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/common/ExamplePubsubTopicAndSubscriptionOptions.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/DebuggingWordCount.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/common/ExamplePubsubTopicOptions.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/utils/PubSubToTableRow.java
+/Users/ggarnotel/projects/djo/apachebeam-example/java/src/main/java/com/djo/beam/example/jobs/RidesWithDollar.java
