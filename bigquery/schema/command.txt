@@ -1,0 +1,11 @@
+####### Project Taxi #######
+## bigquery
+bq mk -t sfeir-data:data_taxi.yellow_taxi_2016_vendor_2 ../bigquery/schema/taxi_schema.json
+bq load 
+
+## Lauch Rides with dollar
+mvn compile exec:java -Dexec.mainClass=com.djo.beam.example.jobs.RidesWithDollar -Dexec.args="--runner=DataflowRunner  --gcpTempLocation=gs://djotmp-sfeir/tmp --zone=europe-west1-c --project=sfeir-bucket --sinkProject=sfeir-bucket --sinkTopic=visualizer --table=sfeir-bucket:taxiJaxDemo.positiontaxi --streaming=true" -Pdataflow-runner
+
+## Lauch Bigquery SQL
+mvn compile exec:java -Dexec.mainClass=com.djo.beam.example.jobs.TaxiSQLBigQuery -Dexec.args="--runner=DataflowRunner  --gcpTempLocation=gs://djotmp/taxisql/tmp --zone=europe-west1-c --project=sfeir-data --tempLocation=gs://djotmp/taxisql/bigquery/tmp --table=sfeir-data:data_taxi.yellow_taxi_2016_vendor_2" -Pdataflow-runner
+

@@ -8,7 +8,7 @@ import org.apache.beam.sdk.options.Validation;
 /**
  * Options to Taxi examples.
  */
-public interface TaxiOptions extends PipelineOptions {
+public interface TaxiRidesOptions extends PipelineOptions {
 
     @Description("ProjectId where data source topic lives")
     @Default.String("pubsub-public-data")
@@ -38,4 +38,14 @@ public interface TaxiOptions extends PipelineOptions {
     String getTable();
     void setTable(String value);
 
+    @Description("BigQuery table, format : table")
+    @Validation.Required
+    String getTable_partition();
+    void setTable_partition(String value);
+
+
+    @Description("BigQuery table, format : dataset")
+    @Validation.Required
+    String getDataset();
+    void setDataset(String value);
 }
