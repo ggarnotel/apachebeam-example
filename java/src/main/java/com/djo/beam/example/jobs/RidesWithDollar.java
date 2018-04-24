@@ -1,18 +1,18 @@
 package com.djo.beam.example.jobs;
 
 
-import com.djo.beam.example.WordCount;
-import com.djo.beam.example.options.TaxiOptions;
+import com.djo.beam.example.options.TaxiRidesOptions;
 import com.djo.beam.example.transform.LatestPointCombine;
 import com.djo.beam.example.utils.PubSubToTableRow;
+import com.djo.beam.example.utils.TableRefPartition;
 import com.djo.beam.example.utils.TableRowToString;
 import com.google.api.services.bigquery.model.TableFieldSchema;
 import com.google.api.services.bigquery.model.TableRow;
 import com.google.api.services.bigquery.model.TableSchema;
+import com.google.api.services.bigquery.model.TimePartitioning;
 import com.google.common.collect.ImmutableList;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
-import org.apache.beam.sdk.io.gcp.bigquery.TableRowJsonCoder;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubMessage;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
-import java.util.function.Predicate;
 
 /**
  *
@@ -84,7 +83,7 @@ public class RidesWithDollar {
      * @param args
      */
     public static void main(String[] args) {
-        TaxiOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(TaxiOptions.class);
+        TaxiRidesOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(TaxiRidesOptions.class);
         Pipeline p = Pipeline.create(options);
 
         PCollection<PubsubMessage> source = p.apply("read from PubSub",PubsubIO.readMessages()
@@ -119,14 +118,23 @@ public class RidesWithDollar {
                                           .withAllowedLateness(Duration.ZERO))
             .apply("group ride points on same ride", Combine.perKey(new LatestPointCombine()))
             .apply("discard key", MapElements.into(TypeDescriptor.of(TableRow.class)).via(a -> a.getValue()));
+
         mapPosition.apply(MapElements.via(new TableRowToString()))
             .apply(PubsubIO.writeStrings().to(String.format("projects/%s/topics/%s", options.getSinkProject(), options.getSinkTopic())));
 
-        mapPosition.apply("Filter ride status",Filter.by(t -> t.containsKey("ride_status")))
-            .apply("Dollar to BigQuery",BigQueryIO.writeTableRows()
+        PCollection<TableRow> readyToBQ =  mapPosition.apply("Filter ride status",Filter.by(t -> t.containsKey("ride_status")));
+
+        readyToBQ.apply("Dollar to BigQuery",BigQueryIO.writeTableRows()
                    .to(options.getTable())
                    .withSchema(SCHEMA)
-                   .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND));
+                   .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND)
+                    .withTimePartitioning(new TimePartitioning().setField("timestamp")));
+
+/**        readyToBQ.apply("Dollar to BigQuery",BigQueryIO.writeTableRows()
+                .to(TableRefPartition.perDay(options.getSinkProject(),options.getDataset(),options.getTable_partition()))
+                .withSchema(SCHEMA)
+                .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND));
+**/
 
         p.run();
     }
