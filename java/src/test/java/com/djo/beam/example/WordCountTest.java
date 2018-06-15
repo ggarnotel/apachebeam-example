@@ -47,33 +47,25 @@ public class WordCountTest {
 
   /** Example test that tests a specific {@link DoFn}. */
   @Test
-  public void testExtractWordsFn2() throws Exception {
-
-    WordCount.ExtractWordsFn2 test = new WordCount.ExtractWordsFn2();
-    test.apply("dsds");
-  }
-
-  @Test
   public void testExtractWordsFn() throws Exception {
     DoFnTester<String, String> extractWordsFn =
-        DoFnTester.of(new ExtractWordsFn());
+            DoFnTester.of(new ExtractWordsFn());
 
     Assert.assertThat(extractWordsFn.processBundle(" some  input  words "),
-                      CoreMatchers.hasItems("some", "input", "words"));
-    Assert.assertThat(extractWordsFn.processBundle(" "),
-                      CoreMatchers.<String>hasItems());
+            CoreMatchers.hasItems("some", "input", "words"));
+    Assert.assertThat(extractWordsFn.processBundle(" "), CoreMatchers.hasItems());
     Assert.assertThat(extractWordsFn.processBundle(" some ", " input", " words"),
-                      CoreMatchers.hasItems("some", "input", "words"));
+            CoreMatchers.hasItems("some", "input", "words"));
   }
 
   static final String[] WORDS_ARRAY = new String[] {
-    "hi there", "hi", "hi sue bob",
-    "hi sue", "", "bob hi"};
+          "hi there", "hi", "hi sue bob",
+          "hi sue", "", "bob hi"};
 
   static final List<String> WORDS = Arrays.asList(WORDS_ARRAY);
 
   static final String[] COUNTS_ARRAY = new String[] {
-      "hi: 5", "there: 1", "sue: 2", "bob: 2"};
+          "hi: 5", "there: 1", "sue: 2", "bob: 2"};
 
   @Rule
   public TestPipeline p = TestPipeline.create();
@@ -85,7 +77,7 @@ public class WordCountTest {
     PCollection<String> input = p.apply(Create.of(WORDS).withCoder(StringUtf8Coder.of()));
 
     PCollection<String> output = input.apply(new CountWords())
-      .apply(MapElements.via(new FormatAsTextFn()));
+            .apply(MapElements.via(new FormatAsTextFn()));
 
     PAssert.that(output).containsInAnyOrder(COUNTS_ARRAY);
     p.run().waitUntilFinish();
